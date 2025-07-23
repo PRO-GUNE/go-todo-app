@@ -3,16 +3,34 @@ package main
 import (
 	"go-todo-app/controller"
 	"go-todo-app/entity"
+	"go-todo-app/initializer"
 	"go-todo-app/service"
+
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	taskService    service.TaskService       = service.New()
-	taskController controller.TaskController = controller.New(taskService)
+	taskService    service.TaskService
+	taskController controller.TaskController
 )
+
+func init() {
+	// Initialize the task service and controller
+	taskService = service.New()
+	taskController = controller.New(taskService)
+
+	// Load environment variables
+	if err := initializer.LoadEnvVariables(); err != nil {
+		panic("Failed to load environment variables: " + err.Error())
+	}
+
+	// Connect to the database
+	if err := initializer.ConnectToDB(); err != nil {
+		panic("Failed to connect to the database: " + err.Error())
+	}
+}
 
 func main() {
 	router := gin.Default()
@@ -96,5 +114,5 @@ func main() {
 	})
 
 	// Start the server on port 8080
-	router.Run(":8080")
+	router.Run()
 }
