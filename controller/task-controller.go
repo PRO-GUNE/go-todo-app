@@ -22,7 +22,7 @@ type taskController struct {
 }
 
 // New creates a new instance of TaskController - Constructor function
-func New() TaskController {
+func NewTaskController() TaskController {
 	return &taskController{
 		db: initializers.DB,
 	}

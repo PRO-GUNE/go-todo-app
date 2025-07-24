@@ -3,12 +3,14 @@ package main
 import (
 	"go-todo-app/controller"
 	"go-todo-app/initializers"
+	"go-todo-app/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
 	taskController controller.TaskController
+	userController controller.UserController
 )
 
 func init() {
@@ -22,8 +24,13 @@ func init() {
 		panic("Failed to connect to the database: " + err.Error())
 	}
 
+	// Sync the database schema
+	// initializers.SyncDatabase()
+
 	// Initialize the task service and controller
-	taskController = controller.New()
+	taskController = controller.NewTaskController()
+	// Initialize the user controller
+	userController = controller.NewUserController()
 }
 
 func main() {
@@ -36,12 +43,23 @@ func main() {
 		})
 	})
 
+	// Define routes for user operations
+	router.POST("/signup", userController.Signup)
+	router.POST("/login", userController.Login)
+
 	// Define routes for task operations
 	router.GET("/tasks", taskController.GetAllTasks)
 	router.GET("/tasks/:id", taskController.GetTaskByID)
 	router.POST("/tasks", taskController.CreateTask)
 	router.PUT("/tasks/:id", taskController.UpdateTask)
 	router.DELETE("/tasks/:id", taskController.DeleteTask)
+
+	// Authentication routes
+	authGroup := router.Group("/auth", middleware.RequireAuth())
+
+	// Define routes for user profile operations
+	authGroup.GET("/profile", userController.GetUserProfile)
+	authGroup.DELETE("/profile", userController.DeleteUser)
 
 	// Start the server on port 8080
 	router.Run()
