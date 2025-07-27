@@ -47,19 +47,18 @@ func main() {
 	router.POST("/signup", userController.Signup)
 	router.POST("/login", userController.Login)
 
-	// Define routes for task operations
-	router.GET("/tasks", taskController.GetAllTasks)
-	router.GET("/tasks/:id", taskController.GetTaskByID)
-	router.POST("/tasks", taskController.CreateTask)
-	router.PUT("/tasks/:id", taskController.UpdateTask)
-	router.DELETE("/tasks/:id", taskController.DeleteTask)
-
 	// Authentication routes
 	authGroup := router.Group("/auth", middleware.RequireAuth())
 
 	// Define routes for user profile operations
 	authGroup.GET("/profile", userController.GetUserProfile)
 	authGroup.DELETE("/profile", userController.DeleteUser)
+	// Define routes for task operations
+	authGroup.GET("/tasks", taskController.GetAllTasks)
+	authGroup.GET("/tasks/:id", taskController.GetTaskByID)
+	authGroup.POST("/tasks", taskController.CreateTask)
+	authGroup.PUT("/tasks/:id", taskController.UpdateTask)
+	authGroup.DELETE("/tasks/:id", taskController.DeleteTask)
 
 	// Start the server on port 8080
 	router.Run()
