@@ -1,0 +1,17 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  run:
+    cmds:
+      - go run .
+    silent: true
+
+  build:
+    cmds:
+      - go build -o ./build/server server.go
+    silent: true
